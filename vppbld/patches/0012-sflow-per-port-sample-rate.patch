@@ -74,10 +74,10 @@ index 3d5363166..461555a2e 100644
  
    /* the rest of this is boilerplate code just to make sure
 diff --git a/src/plugins/sflow/sflow.c b/src/plugins/sflow/sflow.c
-index 67b0cb38b..f231fb524 100644
+index 89529d1ca..5d18726ef 100644
 --- a/src/plugins/sflow/sflow.c
 +++ b/src/plugins/sflow/sflow.c
-@@ -550,12 +550,18 @@ read_node_counters (sflow_main_t *smp, sflow_err_ctrs_t *ctrs)
+@@ -515,12 +515,18 @@ read_node_counters (sflow_main_t *smp, sflow_err_ctrs_t *ctrs)
      {
        sflow_per_thread_data_t *sfwk =
  	vec_elt_at_index (smp->per_thread_data, thread_index);
@@ -97,7 +97,7 @@ index 67b0cb38b..f231fb524 100644
  }
  
  static void
-@@ -676,6 +682,19 @@ sflow_set_worker_sampling_state (sflow_main_t *smp)
+@@ -641,6 +647,19 @@ sflow_set_worker_sampling_state (sflow_main_t *smp)
      }
  }
  
@@ -117,7 +117,7 @@ index 67b0cb38b..f231fb524 100644
  static void
  sflow_sampling_start (sflow_main_t *smp)
  {
-@@ -748,6 +767,7 @@ sflow_sampling_rate (sflow_main_t *smp, u32 samplingN)
+@@ -713,6 +732,7 @@ sflow_sampling_rate (sflow_main_t *smp, u32 samplingN)
        // dynamic change of sampling rate
        smp->samplingN = samplingN;
        sflow_set_worker_sampling_state (smp);
@@ -125,7 +125,7 @@ index 67b0cb38b..f231fb524 100644
      }
    else
      {
-@@ -889,14 +909,47 @@ sflow_enable_disable (sflow_main_t *smp, u32 sw_if_index, bool enable_disable)
+@@ -854,14 +874,47 @@ sflow_enable_disable (sflow_main_t *smp, u32 sw_if_index, bool enable_disable)
        sfif->hw_if_index = sw->hw_if_index;
        sfif->polled = 0;
        sfif->sflow_enabled = enable_disable;
@@ -134,7 +134,7 @@ index 67b0cb38b..f231fb524 100644
 +        {
 +          sfif->seed = sw->hw_if_index;
 +          sfif->skip = sflow_next_random_skip_if(smp,sfif);
-+        }  
++        }
 +
        sflow_enable_disable_interface (smp, sfif);
        smp->interfacesEnabled += (enable_disable) ? 1 : -1;
@@ -167,18 +167,18 @@ index 67b0cb38b..f231fb524 100644
 +  sfif->samplingN = samplingN;
 +  sfif->skip = sflow_next_random_skip_if(smp, sfif);
 +
-+  return 0; 
++  return 0;
 +
 +}
 +
- int 
- sflow_report_linux_ifindex(sflow_main_t *smp, bool enable)
- {
+ static clib_error_t *
+ sflow_sampling_rate_command_fn (vlib_main_t *vm, unformat_input_t *input,
+ 				vlib_cli_command_t *cmd)
 diff --git a/src/plugins/sflow/sflow.h b/src/plugins/sflow/sflow.h
-index 0540cae48..00ad8051e 100644
+index 7e8c0469e..43df10f97 100644
 --- a/src/plugins/sflow/sflow.h
 +++ b/src/plugins/sflow/sflow.h
-@@ -247,4 +247,14 @@ sflow_next_random_skip (sflow_per_thread_data_t *sfwk)
+@@ -246,4 +246,14 @@ sflow_next_random_skip (sflow_per_thread_data_t *sfwk)
    return (random_u32 (&sfwk->seed) % lim) + 1;
  }
  
