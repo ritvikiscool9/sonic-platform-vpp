@@ -1,0 +1,72 @@
+diff --git a/src/plugins/sflow/sflow.api b/src/plugins/sflow/sflow.api
+index 57a478b62..c2fae8dd1 100644
+--- a/src/plugins/sflow/sflow.api
++++ b/src/plugins/sflow/sflow.api
+@@ -282,3 +282,30 @@ define sflow_interface_details
+   u32 context;
+   vl_api_interface_index_t hw_if_index;
+ };
++
++/** \brief
++    @param client_index - opaque cookie to identify the sender
++    @param context - sender context, to match reply w/ request
++    @param sampling_N - A port's sampling rate
++    @param hw_if_index - hardware interface handle
++*/
++autoreply define sflow_interface_sampling_rate_set {
++    u32 client_index;
++    u32 context;
++    u32 sampling_N [default=10000];
++    vl_api_interface_index_t hw_if_index;
++};
++
++/** \brief
++    @param client_index - opaque cookie to identify the sender
++    @param context - sender context, to match reply w/ request
++    @param direction - A port's direction
++    @param hw_if_index - hardware interface handle
++*/
++autoreply define sflow_interface_direction_set {
++    u32 client_index;
++    u32 context;
++    u32 direction;
++    vl_api_interface_index_t hw_if_index;
++};
++
+diff --git a/src/plugins/sflow/sflow.c b/src/plugins/sflow/sflow.c
+index 6a8cb6af8..c19726256 100644
+--- a/src/plugins/sflow/sflow.c
++++ b/src/plugins/sflow/sflow.c
+@@ -1396,6 +1396,32 @@ send_sflow_interface_details (vpe_api_main_t *am, vl_api_registration_t *reg,
+   vl_api_send_msg (reg, (u8 *) mp);
+ }
+ 
++static void
++vl_api_sflow_interface_sampling_rate_set_t_handler (
++  vl_api_sflow_interface_sampling_rate_set_t *mp)
++{
++  vl_api_sflow_interface_sampling_rate_set_reply_t *rmp;
++  sflow_main_t *smp = &sflow_main;
++  int rv;
++
++  rv = sflow_set_sampling_rate_set (smp, ntohl (mp->hw_if_index), ntohl (mp->sampling_N));
++
++  REPLY_MACRO (VL_API_SFLOW_INTERFACE_SAMPLING_RATE_SET_REPLY);
++}
++
++static void
++vl_api_sflow_interface_direction_set_t_handler (
++  vl_api_sflow_interface_direction_set_t *mp)
++{
++  vl_api_sflow_interface_direction_set_reply_t *rmp;
++  sflow_main_t *smp = &sflow_main;
++  int rv;
++
++  rv = sflow_set_direction_set (smp, ntohl (mp->hw_if_index), ntohl (mp->direction));
++
++  REPLY_MACRO (VL_API_SFLOW_INTERFACE_DIRECTION_SET_REPLY);
++}
++
+ static void
+ vl_api_sflow_interface_dump_t_handler (vl_api_sflow_interface_dump_t *mp)
+ {
