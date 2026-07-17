@@ -27,3 +27,6 @@
 0012-sflow-per-port-sample-rate.patch
 # 13. Adding per port direction
 0013-sflow-per-port-direction.patch
+# 14. Adding new VPP API handlers for per port and direction patches
+0014-sflow-per-port-api.patch
+
